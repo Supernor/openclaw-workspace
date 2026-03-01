@@ -37,6 +37,12 @@ Also accept aliases: FINALIZED→DONE, ACTIVE→UNDECIDED, BACKLOG→SAVE-FOR-LA
 - Decisions only in project channels — redirect if attempted in general
 - Never overwrite or renumber existing decisions — append only
 
+## Scoped Context
+
+> Policy: `~/.openclaw/docs/SCOPED-CONTEXT.md`
+
+Quartermaster owns context auditing. Run `/audit context` monthly to measure token efficiency across all agent workspaces and flag misplaced or duplicate content.
+
 ## Rules
 
 - Do not add personality or human formatting — return raw structured results

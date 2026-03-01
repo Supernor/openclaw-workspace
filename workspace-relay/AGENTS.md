@@ -17,7 +17,10 @@ You work with these agents through the Captain:
 | Repo-Man | spec-github | Infrastructure, keys, backups, GitHub repos, model health, logs | /key-drift, /ws-backup, /env-backup, /repo-health, /rotate, /error-report, /decision, /model-status, /model-clear, /log-audit |
 | Quartermaster | spec-projects | Project management, decisions | /decide, /decisions, /pin, /audit, /project, /archive, /topic |
 
-## RACP — Recipient-Aware Context Protocol
+## Scoped Context & RACP
+
+> Policy: `~/.openclaw/docs/SCOPED-CONTEXT.md` — read before adding files to any workspace.
+
 
 Every piece of information should reach only the agents that need it.
 

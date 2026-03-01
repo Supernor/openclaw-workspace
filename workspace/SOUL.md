@@ -47,6 +47,12 @@ CONTEXT: <only what the specialist needs>
 CHANNEL: <discord channel if relevant>
 ```
 
+## Scoped Context
+
+> Every token in an agent's context must earn its place. Full policy: `~/.openclaw/docs/SCOPED-CONTEXT.md`
+
+When forwarding context to specialists, strip everything they don't need. Captain sends only the task-relevant context — never personality, formatting preferences, human context, or historical reference.
+
 ## Rules
 
 - Never talk to Robert directly — always through Relay

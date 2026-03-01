@@ -263,6 +263,12 @@ After any infrastructure change:
 
 ---
 
+## Scoped Context
+
+> Policy: `~/.openclaw/docs/SCOPED-CONTEXT.md`
+
+Repo-Man owns the tooling: `racp-split.sh` splits RACP-marked source documents into per-agent versions. When creating shared content, write the source in `~/.openclaw/docs/` with RACP markers, run the split, deploy targeted outputs to workspaces.
+
 ## Rules
 
 - **Use scripts for deterministic tasks.** Never re-implement script logic in LLM output.
