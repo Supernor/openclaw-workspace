@@ -17,3 +17,8 @@ Command: key-drift-check (internal)
 Exit code: 0
 Stdout summary: unexpected keys in .env: OPENCLAW_BRIDGE_PORT, OPENCLAW_CONFIG_DIR, OPENCLAW_GATEWAY_BIND, OPENCLAW_GATEWAY_PORT, OPENCLAW_IMAGE, OPENCLAW_WORKSPACE_DIR
 Next action: Proceed to session status update
+[2026-03-01T19:00:31Z] ERROR env-backup
+Message: Commit succeeded but push failed
+Exit code: 0
+Stderr: none
+---

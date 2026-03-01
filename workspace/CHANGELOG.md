@@ -29,3 +29,50 @@
 
 ### Backed up
 - `~/.openclaw/openclaw.json.bak.2026-03-01` — pre-change backup
+
+## 2026-03-01 — Repo-Man Overhaul: Scripts, Cron, GitHub Integration
+
+**Context:** Repo-Man's skills were LLM-only markdown instructions burning tokens on deterministic tasks. No skills had ever actually run. Nightly cron wasn't wired. GitHub repos were empty. No jq. Missing repo clones.
+
+**Changes made by:** Claude Code (via Robert's direction)
+
+### Created — Shell Scripts (`~/.openclaw/scripts/`)
+- `key-drift-check.sh` — checks both /app/.env AND runtime env vars, outputs JSON
+- `env-backup.sh` — generates .env.template from both sources, pushes to GitHub
+- `ws-backup.sh` — backs up ALL 4 workspaces (was only doing 2), correct dir names
+- `skills-backup.sh` — backs up skills + hooks + scripts to openclaw-skills repo
+- `repo-health.sh` — checks 3 repos, secrets count, local log, outputs JSON
+- `log-event.sh` — structured logging, WARN+ auto-pushed to GitHub ERRORS.md
+- `gateway-log-query.sh` — parses structured gateway JSON logs with jq filtering
+- `incident-manager.sh` — creates/closes GitHub Issues for model health incidents
+- `config-tag.sh` — tags config repo for versioned rollback
+
+### Created — New Skills
+- `gateway-log-query/skill.md` — query gateway logs
+- `incident-manager/skill.md` — manage GitHub Issues for incidents
+- `skills-backup/skill.md` — push skills to GitHub
+- `config-tag/skill.md` — version config with git tags
+
+### Modified — Existing Skills (rewritten as script wrappers)
+- `key-drift-check/skill.md` — v2: calls script, reports JSON
+- `workspace-backup/skill.md` — v2: calls script, all 4 workspaces
+- `env-backup/skill.md` — v2: calls script, includes runtime env vars
+- `repo-health/skill.md` — v2: calls script
+- `log-event/skill.md` — v2: calls script
+- `error-report/skill.md` — v2: uses gateway-log-query + incident-manager
+
+### Modified — Config & Bootstrap
+- `cron/jobs.json` — added `repo-man-nightly` cron job at 03:00 UTC
+- `HEARTBEAT.md` — enabled with model health monitoring steps
+- `AGENTS.md` — comprehensive rewrite: scripts-first policy, escalation rules, log sources, sync policy
+- `TOOLS.md` — updated with scripts, jq, all repo clones
+- `IMPROVEMENTS.md` — closed 9 items, documented all enhancements
+
+### Infrastructure
+- Installed jq in container (runtime — needs Dockerfile for persistence)
+- Cloned openclaw-workspace and openclaw-skills repos into Repo-Man workspace
+- Created GitHub Actions health check workflow (template) in openclaw-config
+- Pushed health check workflow to GitHub
+
+### GitHub Actions
+- `openclaw-config/.github/workflows/health-check.yml` — gateway health check every 6h (needs URL configured)
