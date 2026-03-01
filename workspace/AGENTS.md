@@ -12,7 +12,7 @@
 |-------|----|-----------|
 | Relay | relay | Human interface — all communication with Robert goes through Relay |
 | Repo-Man | spec-github | Infrastructure: keys, backups, drift checks, GitHub repos |
-| Quartermaster | spec-projects | Projects: decisions, channels, audits, archiving |
+| Scribe | spec-projects | Projects: decisions, channels, audits, archiving |
 
 ## Rules
 

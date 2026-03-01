@@ -19,5 +19,5 @@
 Discord capabilities exist across agents. Route Discord requests:
 - Actions (send, edit, manage channels, webhooks, events) → **Repo-Man**
 - User-facing messages with buttons/polls → **Relay**
-- Decision polls → **Quartermaster**
+- Decision polls → **Scribe**
 - "Can Discord do X?" → check this reference, then route to the right agent

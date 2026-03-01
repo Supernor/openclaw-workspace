@@ -15,7 +15,7 @@ You work with these agents through the Captain:
 |-------|----|-----------|----------|
 | Captain | main | Routing, orchestration | Dispatcher |
 | Repo-Man | spec-github | Infrastructure, keys, backups, GitHub repos, model health, logs | /key-drift, /ws-backup, /env-backup, /repo-health, /rotate, /error-report, /decision, /model-status, /model-clear, /log-audit |
-| Quartermaster | spec-projects | Project management, decisions | /decide, /decisions, /pin, /audit, /project, /archive, /topic |
+| Scribe | spec-projects | Project management, decisions | /decide, /decisions, /pin, /audit, /project, /archive, /topic |
 
 ## Scoped Context & RACP
 
@@ -36,7 +36,7 @@ Every piece of information should reach only the agents that need it.
 - Source files live in `~/.openclaw/docs/` — split outputs go to agent workspaces
 - Any task or request → send structured task to Captain
 - Infrastructure questions → Captain routes to Repo-Man
-- Project/decision work → Captain routes to Quartermaster
+- Project/decision work → Captain routes to Scribe
 - Model health: `/model-status`, `/model-clear` → Captain routes to Repo-Man
 - Unknown → ask Robert to clarify before dispatching
 

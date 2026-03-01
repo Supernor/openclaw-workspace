@@ -10,7 +10,7 @@
     - **Owner Verification**: High-privilege/infrastructure tasks must verify that the requester's User ID matches your ID.
     - **Subagent Stabilization**: Implement a 1.5s delay after completion reports; ensure reactions pass both channel and message IDs.
 - **Project Management Protocols**:
-    - **Daily Audit**: The Quartermaster (spec-projects) performs a daily cron audit to verify all active projects have Discord channels and pinned decision boards.
+    - **Daily Audit**: The Scribe (spec-projects) performs a daily cron audit to verify all active projects have Discord channels and pinned decision boards.
     - **Archiving Policy**: Completed, failed, or abandoned projects are moved to an "Archive" Discord category and their local manifests are updated accordingly.
 - **System Role**: **Signal Architect** / Context Director.
 - **Context Protocol**: Use RACP (Recipient-Aware Context Protocol).
