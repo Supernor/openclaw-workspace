@@ -9,6 +9,31 @@
 
 ---
 
+## Discord Ops Channels
+
+All operational output goes to the `🔧 OPERATIONS` category. **Always use channel IDs, not names.**
+
+| Channel | ID | Purpose | Who posts |
+|---------|----|---------|-----------|
+| #ops-dashboard | `1477754431780028598` | Pinned live status summary | Nightly cron (dashboard-update) |
+| #ops-alerts | `1477754571697688627` | Failures only — high signal | Heartbeat (model-failover-notify), nightly on failure |
+| #ops-nightly | `1477754636046831738` | Full nightly cron report | Nightly cron |
+| #ops-changelog | `1477754637527290030` | Infrastructure changes | Nightly cron (changelog-post) |
+| #ops-github | `1477754638290649209` | GitHub activity feed | Nightly cron (github-feed) |
+
+**Pinned message in #ops-dashboard:** `1477754773951352903` — edit this message, never delete/recreate.
+**Category ID:** `1477754392584126675`
+**Guild ID:** `1477115265300037703`
+
+**Routing rules:**
+- Script results / nightly summary → `#ops-nightly`
+- Failures, quarantines, alerts → `#ops-alerts`
+- Dashboard refresh → edit pinned message in `#ops-dashboard`
+- New changelog entries → `#ops-changelog`
+- GitHub commits/issues/tags → `#ops-github`
+
+---
+
 ## Canonical Key List
 
 Present in `/app/.env` AND/OR runtime env vars (docker-compose injected):
@@ -50,6 +75,8 @@ This saves tokens and prevents inconsistency.
 | `gateway-log-query.sh [opts]` | Query gateway JSON logs | Filtered log entries |
 | `incident-manager.sh open/close/list/check` | GitHub Issues for incidents | JSON: action, issue |
 | `config-tag.sh [label]` | Tag config repo for rollback | JSON: status, tag |
+| `log-audit.sh` | Audit all logs: persist, prune, check health | JSON: full audit report |
+| `racp-split.sh <source> <outdir>` | Split RACP-marked docs into per-agent versions | JSON: per-agent chars/tokens |
 
 ---
 
@@ -79,6 +106,7 @@ This saves tokens and prevents inconsistency.
 | `env-backup` | `/env-backup` | user | script |
 | `skills-backup` | `/skills-backup` | user | script |
 | `repo-health` | `/repo-health` | user | script |
+| `log-audit` | `/log-audit` | user | script |
 | `error-report` | `/error-report` | user | script + LLM |
 | `rotate-key` | `/rotate <key>` | user | LLM (guided) |
 | `log-decision` | `/decision <text>` | user | LLM |
@@ -88,8 +116,11 @@ This saves tokens and prevents inconsistency.
 | `model-status` | `/model-status` | user | LLM (reads JSON) |
 | `model-clear` | `/model-clear <provider>` | user | LLM + jq |
 | `log-event` | internal | internal | script |
-| `model-failover-notify` | internal | heartbeat | LLM |
+| `model-failover-notify` | internal | heartbeat | LLM → #ops-alerts |
 | `model-auto-fallback` | internal | heartbeat | LLM |
+| `dashboard-update` | internal | nightly | LLM → #ops-dashboard |
+| `changelog-post` | internal | nightly | LLM → #ops-changelog |
+| `github-feed` | internal | nightly | LLM → #ops-github |
 
 **Script-backed skills:** run the script, report the JSON result. No re-implementation.
 **LLM skills:** require judgment — use the LLM but keep responses concise.
@@ -107,16 +138,68 @@ On heartbeat, follow HEARTBEAT.md exactly:
 
 ---
 
+## Log Governance
+
+**Repo-Man owns all operational logs across OpenClaw.** This means: persistence, retention, rotation, health monitoring, and ensuring agents that need logs can find them.
+
+### All Log Sources
+
+| Source | Location | Format | Retention | Rotation |
+|--------|----------|--------|-----------|----------|
+| Gateway log | `/tmp/openclaw/openclaw-YYYY-MM-DD.log` | Structured JSON | **Volatile** — lost on restart | `log-audit.sh` copies to persistent dir |
+| Gateway (persisted) | `~/.openclaw/logs/gateway/` | Structured JSON | 7 days | `log-audit.sh` prunes nightly |
+| Session files | `~/.openclaw/agents/*/sessions/*.jsonl` | JSONL (full chat) | 7 days (min 3 kept/agent) | `log-audit.sh` prunes nightly |
+| Config audit | `~/.openclaw/logs/config-audit.jsonl` | JSONL (change tracking) | 1000 lines max | `log-audit.sh` rotates to 500 |
+| Repo-Man log | `workspace-spec-github/logs/repo-man.log` | Text (via log-event.sh) | 500 lines max | `log-audit.sh` rotates to 200 |
+| Model health | `~/.openclaw/model-health.json` | JSON snapshot | Overwritten each poll | N/A (current state only) |
+| Health notifications | `~/.openclaw/model-health-notifications.jsonl` | JSONL | 500 lines | Hook rotates internally |
+| Cron run logs | `~/.openclaw/cron/runs/*.jsonl` | JSONL per job | Unbounded (small) | Checked for failures nightly |
+| Delivery queue | `~/.openclaw/delivery-queue/` + `failed/` | JSON per message | Until delivered/investigated | Checked nightly for stuck messages |
+| ERRORS.md | openclaw-config repo `logs/ERRORS.md` | Markdown | Git history | WARN+ pushed by log-event.sh |
+| LAST_RUN.md | openclaw-config repo `logs/LAST_RUN.md` | Markdown | Git history | Updated after every skill run |
+| LanceDB | `~/.openclaw/memory/lancedb/` | Lance columnar | Permanent | Managed by OpenClaw core |
+
+### What log-audit.sh does automatically
+- Copies gateway logs from volatile `/tmp/` to persistent `~/.openclaw/logs/gateway/`
+- Prunes gateway logs older than 7 days
+- Prunes session files older than 7 days (keeps minimum 3 per agent)
+- Rotates config-audit.jsonl at 1000 lines
+- Rotates repo-man.log at 500 lines
+- Checks cron run history for failures
+- Checks delivery queue for stuck/failed messages
+- Reports disk usage summary
+
+### Log query tools
+| Need | Tool |
+|------|------|
+| Gateway errors/models/routing | `gateway-log-query.sh --errors` or `--models` |
+| Config change history | `jq . ~/.openclaw/logs/config-audit.jsonl` |
+| Model health timeline | `jq . ~/.openclaw/model-health-notifications.jsonl` |
+| Cron failures | `jq 'select(.status=="error")' ~/.openclaw/cron/runs/*.jsonl` |
+| Failed deliveries | `cat ~/.openclaw/delivery-queue/failed/*.json \| jq .` |
+
+---
+
 ## Nightly Cron (03:00 UTC)
 
-Automated via OpenClaw cron system. Runs:
+Automated via OpenClaw cron system. Two phases:
+
+**Phase 1 — Scripts** (collect data):
 1. `key-drift-check.sh`
 2. `ws-backup.sh`
 3. `env-backup.sh`
 4. `skills-backup.sh`
 5. `repo-health.sh`
+6. `log-audit.sh`
 
-Sends single summary to Discord. Logs errors via `log-event.sh`.
+**Phase 2 — Discord reporting** (post results):
+7. Send full nightly summary → `#ops-nightly` (`1477754636046831738`)
+8. Run `dashboard-update` → edit pinned message in `#ops-dashboard`
+9. Run `changelog-post` → post new entries to `#ops-changelog`
+10. Run `github-feed` → post repo activity to `#ops-github`
+11. If ANY script failed → send alert to `#ops-alerts` (`1477754571697688627`)
+
+Log errors via `log-event.sh`.
 
 ---
 
@@ -127,6 +210,7 @@ Sends single summary to Discord. Logs errors via `log-event.sh`.
 - Reading JSON files (model-health.json, auth-profiles.json)
 - Routine heartbeat checks, GitHub pushes
 - Creating/closing GitHub Issues via incident-manager
+- Log audits and rotation
 
 **Escalate to Claude Code:**
 - handler.ts modification (TypeScript in gateway process)
@@ -151,13 +235,15 @@ After any infrastructure change:
 
 ---
 
-## Log Sources (in order of richness)
+## Log Sources (quick reference for query)
 
 | Source | Location | Format | Query tool |
 |--------|----------|--------|------------|
 | Gateway log | `/tmp/openclaw/openclaw-YYYY-MM-DD.log` | JSON | `gateway-log-query.sh` |
+| Gateway (persisted) | `~/.openclaw/logs/gateway/` | JSON | `gateway-log-query.sh` (pass path) |
 | Model health | `~/.openclaw/model-health.json` | JSON | `cat` + `jq` |
 | Notifications | `~/.openclaw/model-health-notifications.jsonl` | JSONL | `tail` + `jq` |
+| Config audit | `~/.openclaw/logs/config-audit.jsonl` | JSONL | `jq` |
 | Repo-Man log | `workspace-spec-github/logs/repo-man.log` | text | `grep` |
 | ERRORS.md | openclaw-config/logs/ERRORS.md | markdown | GitHub web |
 | LAST_RUN.md | openclaw-config/logs/LAST_RUN.md | markdown | GitHub web |
@@ -171,17 +257,18 @@ After any infrastructure change:
 
 - `SYSTEM-REFERENCE.md` — model health system internals, JSON schemas, debugging
 - `CLAUDE-CODE-BRIDGE.md` — how to work with Claude Code
+- `DISCORD-REFERENCE.md` — targeted Discord capabilities for Repo-Man (components, webhooks, presence, channel management)
 - `CHANGELOG.md` (in Captain/Relay workspaces) — all infrastructure changes
+- `~/.openclaw/docs/` — RACP source files (marked-up originals for racp-split.sh)
 
 ---
 
 ## Rules
 
 - **Use scripts for deterministic tasks.** Never re-implement script logic in LLM output.
-- Never truncate logs. Append only.
+- Never truncate logs. Append only (rotation handled by log-audit.sh).
 - Never commit secrets. Template/redact first.
 - Always verify after push: `gh api repos/NowThatJustMakesSense/<repo>`
 - Always update LAST_RUN.md even when a skill fails — especially when it fails.
 - If gh CLI auth fails: log FATAL, stop, notify Robert.
-- jq is installed. Use it for JSON manipulation.
-- Runtime installs (jq, etc.) vanish on container rebuild — flag for Dockerfile if critical.
+- jq is installed (in Dockerfile, persists across rebuilds). Use it for JSON manipulation.

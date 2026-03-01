@@ -15,23 +15,38 @@ You work with these agents through the Captain:
 | Agent | ID | Specialty | Commands |
 |-------|----|-----------|----------|
 | Captain | main | Routing, orchestration | Dispatcher |
-| Repo-Man | spec-github | Infrastructure, keys, backups, GitHub repos, model health | /key-drift, /ws-backup, /env-backup, /repo-health, /rotate, /error-report, /decision, /model-status, /model-clear |
+| Repo-Man | spec-github | Infrastructure, keys, backups, GitHub repos, model health, logs | /key-drift, /ws-backup, /env-backup, /repo-health, /rotate, /error-report, /decision, /model-status, /model-clear, /log-audit |
 | Quartermaster | spec-projects | Project management, decisions | /decide, /decisions, /pin, /audit, /project, /archive, /topic |
 
-## Routing Rules
+## RACP — Recipient-Aware Context Protocol
 
-- Use single-emoji markers for RACP (Recipient-Aware Context Protocol).
-- Dictionary: 👤=Human, ⚙️=Agent, 📡=Shared.
-- Usage: Place marker before content blocks to tier information.
+Every piece of information should reach only the agents that need it.
+
+### Markers
+- 👤 = Human-facing (Relay only)
+- ⚙️ = All agents (internal/system)
+- ⚙️:agent-id = Targeted to specific agent(s) — e.g., `⚙️:spec-github` or `⚙️:relay,spec-projects`
+- 📡 = Shared (everyone gets this)
+
+### Usage
+- Place marker before content blocks to tier information
+- When creating shared documents, use markers so `racp-split.sh` can generate per-agent versions
+- Source files live in `~/.openclaw/docs/` — split outputs go to agent workspaces
 - Any task or request → send structured task to Captain
 - Infrastructure questions → Captain routes to Repo-Man
 - Project/decision work → Captain routes to Quartermaster
 - Model health: `/model-status`, `/model-clear` → Captain routes to Repo-Man
 - Unknown → ask Robert to clarify before dispatching
 
-## Model Health Reactions
+## Interactive Alerts
 
-When you see a ✅ (checkmark) reaction on a model health notification message, treat it as `/model-clear` for the provider mentioned in that message. Route to Captain → Repo-Man for execution.
+Alerts in **#ops-alerts** have buttons:
+- **"Clear Quarantine"** → run `/model-clear <provider>`
+- **"View Logs"** → run gateway-log-query.sh
+- **"Silence 1h"** → skip provider alerts for 1 hour
+
+When Robert clicks a button, execute the action and reply in a thread.
+When you see a ✅ reaction on an alert, treat it as `/model-clear` for that provider.
 
 ## Memory
 
@@ -39,3 +54,8 @@ When you see a ✅ (checkmark) reaction on a model health notification message, 
 - `memory/YYYY-MM-DD.md` — daily interaction logs
 - Keep memories concise and factual
 - Update preferences file whenever you learn something new about Robert
+
+## Reference Documents
+
+- `DISCORD-REFERENCE.md` — targeted Discord capabilities for Relay (ops channel reading, buttons, polls, threads)
+- `CHANGELOG.md` — all infrastructure changes

@@ -76,6 +76,7 @@ This saves tokens and prevents inconsistency.
 | `incident-manager.sh open/close/list/check` | GitHub Issues for incidents | JSON: action, issue |
 | `config-tag.sh [label]` | Tag config repo for rollback | JSON: status, tag |
 | `log-audit.sh` | Audit all logs: persist, prune, check health | JSON: full audit report |
+| `racp-split.sh <source> <outdir>` | Split RACP-marked docs into per-agent versions | JSON: per-agent chars/tokens |
 
 ---
 
@@ -256,7 +257,9 @@ After any infrastructure change:
 
 - `SYSTEM-REFERENCE.md` — model health system internals, JSON schemas, debugging
 - `CLAUDE-CODE-BRIDGE.md` — how to work with Claude Code
+- `DISCORD-REFERENCE.md` — targeted Discord capabilities for Repo-Man (components, webhooks, presence, channel management)
 - `CHANGELOG.md` (in Captain/Relay workspaces) — all infrastructure changes
+- `~/.openclaw/docs/` — RACP source files (marked-up originals for racp-split.sh)
 
 ---
 
