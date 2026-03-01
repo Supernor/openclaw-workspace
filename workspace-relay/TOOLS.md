@@ -38,3 +38,15 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+## SSH Tunnel (Dashboard Access)
+
+Robert connects to the dashboard via SSH tunnel from his local machine:
+```bash
+ssh -N -L 18789:127.0.0.1:18789 root@187.77.193.174
+```
+Then open: `http://localhost:18789/chat?session=main`
+
+**If dashboard shows "disconnected (1006)"** — the SSH tunnel probably died. Tell Robert to re-run the command above in a terminal.
+
+Robert is on T-Mobile — his IP changes frequently. Do not use IP-based restrictions.
