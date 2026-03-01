@@ -1,0 +1,4 @@
+.openclaw/
+openclaw-config/
+node_modules/
+*.json

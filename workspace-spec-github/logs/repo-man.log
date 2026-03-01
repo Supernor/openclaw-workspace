@@ -1,0 +1,19 @@
+[2026-03-01T07:14:00Z] INFO bootstrap
+Command: gh auth status
+Exit code: 0
+Stdout summary: ✓ Logged in to github.com account NowThatJustMakesSense (GH_TOKEN)
+Context: gh_token present
+Next action: Proceed to key drift check
+
+[2026-03-01T07:14:10Z] ERROR key-drift-check
+Command: key-drift-check (internal)
+Exit code: 1
+Stderr: key-drift-check FAIL: missing keys: OPENCLAW_PROD_ANTHROPIC_KEY, OPENCLAW_PROD_GOOGLE_AI_KEY, OPENCLAW_PROD_OPENROUTER_KEY, OPENCLAW_PROD_DISCORD_TOKEN
+Context: /app/.env checked against canonical list in AGENTS.md
+Next action: Notify Robert via Discord, update LAST_RUN.md
+
+[2026-03-01T07:14:15Z] WARN key-drift-check
+Command: key-drift-check (internal)
+Exit code: 0
+Stdout summary: unexpected keys in .env: OPENCLAW_BRIDGE_PORT, OPENCLAW_CONFIG_DIR, OPENCLAW_GATEWAY_BIND, OPENCLAW_GATEWAY_PORT, OPENCLAW_IMAGE, OPENCLAW_WORKSPACE_DIR
+Next action: Proceed to session status update
