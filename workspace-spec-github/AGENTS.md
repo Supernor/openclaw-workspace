@@ -121,6 +121,7 @@ This saves tokens and prevents inconsistency.
 | `dashboard-update` | internal | nightly | LLM → #ops-dashboard |
 | `changelog-post` | internal | nightly | LLM → #ops-changelog |
 | `github-feed` | internal | nightly | LLM → #ops-github |
+| `nightly-report` | internal | nightly | LLM → #ops-nightly |
 
 **Script-backed skills:** run the script, report the JSON result. No re-implementation.
 **LLM skills:** require judgment — use the LLM but keep responses concise.
