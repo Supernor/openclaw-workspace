@@ -80,6 +80,7 @@ This saves tokens and prevents inconsistency.
 | `registry.sh <cmd> [key]` | Query shared registry (channels, colors, paths, scripts) | Value or JSON |
 | `context-snapshot.sh` | Generate pre-flight context snapshot for Claude Code handoff | JSON: full system state |
 | `ops-db.sh <cmd> [args]` | Query/mutate the ops SQLite database | JSON: query results |
+| `bridge.sh <cmd> [args]` | Manage bridge task flow (send/check/pickup/complete) | JSON: task lifecycle |
 
 ---
 
@@ -92,6 +93,7 @@ SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Cod
 | `health snapshot` | `ops-db.sh health snapshot` | Record current provider health from model-health.json |
 | `health latest` | `ops-db.sh health latest` | Latest status per provider |
 | `health history` | `ops-db.sh health history google --limit 10` | Provider health timeline |
+| `health trends` | `ops-db.sh health trends 168` | Uptime %, failures, avg resolution time |
 | `incident open` | `ops-db.sh incident open "Title" --provider X --severity critical` | Create incident |
 | `incident close` | `ops-db.sh incident close 1 --resolution "Fixed"` | Close incident |
 | `incident list` | `ops-db.sh incident list` | Open incidents |
@@ -168,6 +170,8 @@ On heartbeat, follow HEARTBEAT.md exactly:
 4. Check if fallback chain is degraded (2+ quarantined) → run model-auto-fallback logic
 5. Update cursor file
 6. Run `context-snapshot.sh` — keep bridge snapshot fresh for Claude Code sessions
+7. Run `ops-db.sh health snapshot` — record provider health to ops-db for trend analytics
+8. Run `bridge.sh check spec-github` — check for pending tasks from Claude Code
 
 ---
 
