@@ -77,6 +77,7 @@ This saves tokens and prevents inconsistency.
 | `config-tag.sh [label]` | Tag config repo for rollback | JSON: status, tag |
 | `log-audit.sh` | Audit all logs: persist, prune, check health | JSON: full audit report |
 | `racp-split.sh <source> <outdir>` | Split RACP-marked docs into per-agent versions | JSON: per-agent chars/tokens |
+| `registry.sh <cmd> [key]` | Query shared registry (channels, colors, paths, scripts) | Value or JSON |
 
 ---
 
@@ -263,6 +264,18 @@ After any infrastructure change:
 - `~/.openclaw/docs/` — RACP source files (marked-up originals for racp-split.sh)
 
 ---
+
+## Shared Registry
+
+`~/.openclaw/registry.json` is the single source of truth for all IDs, paths, and constants. **Never hardcode channel IDs, message IDs, or repo names in skills or docs.** Always read from the registry.
+
+Query shortcuts:
+- `registry.sh channel ops-alerts` → channel ID
+- `registry.sh color green` → accent color code
+- `registry.sh script keyDrift` → full script path
+- `registry.sh get discord.pins.dashboard` → any dotted key
+
+When Claude Code updates a value (e.g., new pinned message ID), it updates the registry. All agents and skills read from it automatically.
 
 ## Scoped Context
 
