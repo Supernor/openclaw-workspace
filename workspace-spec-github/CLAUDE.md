@@ -78,6 +78,35 @@ This saves tokens and prevents inconsistency.
 | `log-audit.sh` | Audit all logs: persist, prune, check health | JSON: full audit report |
 | `racp-split.sh <source> <outdir>` | Split RACP-marked docs into per-agent versions | JSON: per-agent chars/tokens |
 | `registry.sh <cmd> [key]` | Query shared registry (channels, colors, paths, scripts) | Value or JSON |
+| `context-snapshot.sh` | Generate pre-flight context snapshot for Claude Code handoff | JSON: full system state |
+| `ops-db.sh <cmd> [args]` | Query/mutate the ops SQLite database | JSON: query results |
+
+---
+
+## Operational Database (ops.db)
+
+SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Code. Use `ops-db.sh` for all queries.
+
+| Command | Example | What it does |
+|---------|---------|--------------|
+| `health snapshot` | `ops-db.sh health snapshot` | Record current provider health from model-health.json |
+| `health latest` | `ops-db.sh health latest` | Latest status per provider |
+| `health history` | `ops-db.sh health history google --limit 10` | Provider health timeline |
+| `incident open` | `ops-db.sh incident open "Title" --provider X --severity critical` | Create incident |
+| `incident close` | `ops-db.sh incident close 1 --resolution "Fixed"` | Close incident |
+| `incident list` | `ops-db.sh incident list` | Open incidents |
+| `task create` | `ops-db.sh task create spec-github "Summary" --urgency critical` | Create task for Claude Code |
+| `task update` | `ops-db.sh task update 1 completed --result '{...}'` | Update task status |
+| `notify` | `ops-db.sh notify failure anthropic "Message" --reason billing` | Log notification |
+| `notify deliver` | `ops-db.sh notify deliver 1` | Mark notification as sent |
+| `config recent` | `ops-db.sh config recent --limit 5` | Recent config changes |
+| `kv get/set` | `ops-db.sh kv set last_backup "2026-03-01T21:00:00Z"` | Key-value store |
+| `stats` | `ops-db.sh stats` | Table row counts + DB size |
+
+**Tables:** health_snapshots, config_changes, incidents, tasks, notifications, kv
+**Views:** v_open_incidents, v_pending_tasks, v_undelivered_notifications, v_latest_health
+
+> **Note:** sqlite3 is a runtime install — vanishes on container rebuild. Flag for Dockerfile if it disappears.
 
 ---
 
