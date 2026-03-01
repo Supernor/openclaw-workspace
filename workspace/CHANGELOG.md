@@ -99,3 +99,29 @@
 | Config audit | 1000 lines (rotates to 500) |
 | Repo-Man log | 500 lines (rotates to 200) |
 | Health notifications | 500 lines (hook-managed) |
+
+## 2026-03-01 — Discord Ops Channels
+
+**Context:** All operational output was going to one Discord chat. No dedicated channels for alerts, nightly reports, or GitHub activity. Robert had no "glance" view of system health.
+
+**Changes made by:** Claude Code (via Robert's direction)
+
+### Created — Discord
+- Category: `🔧 OPERATIONS` (1477754392584126675)
+- `#ops-dashboard` (1477754431780028598) — pinned live status summary, updated nightly
+- `#ops-alerts` (1477754571697688627) — failures only, high signal, reaction-clearing
+- `#ops-nightly` (1477754636046831738) — full nightly cron report
+- `#ops-changelog` (1477754637527290030) — infrastructure changes
+- `#ops-github` (1477754638290649209) — GitHub activity feed
+
+### Created — Skills
+- `dashboard-update/skill.md` — refreshes pinned dashboard in #ops-dashboard
+- `changelog-post/skill.md` — posts new changelog entries to #ops-changelog
+- `github-feed/skill.md` — posts GitHub activity to #ops-github
+
+### Modified
+- `model-failover-notify/skill.md` — v2: targets #ops-alerts with channel ID
+- `cron/jobs.json` — nightly cron now has 2-phase pipeline (scripts → Discord reporting)
+- Repo-Man `AGENTS.md` — added Discord Ops Channels section with IDs and routing
+- Relay `AGENTS.md` — added ops channel awareness for answering "what happened?"
+- Captain `SOUL.md` — added dashboard/nightly/ops/alerts routing keywords
