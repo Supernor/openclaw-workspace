@@ -50,10 +50,10 @@ OPENCLAW_PROD_OPENROUTER_KEY   — runtime env (docker-compose)
 
 > key-drift-check.sh checks BOTH sources. Do not check /app/.env alone.
 
-### Known-Excluded Keys
+### Additional Keys (in GitHub Secrets, not in canonical env check)
 ```
-OPENCLAW_PROD_DISCORD_APP_ID   — auto-detected from bot token
-OPENCLAW_PROD_SAG_KEY          — ElevenLabs skill not active
+OPENCLAW_PROD_DISCORD_APP_ID   — in GitHub Secrets (auto-detected at runtime)
+OPENCLAW_PROD_SAG_KEY          — in GitHub Secrets (ElevenLabs, not active)
 ```
 
 ---
@@ -110,7 +110,7 @@ SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Cod
 **Tables:** health_snapshots, config_changes, incidents, tasks, notifications, kv
 **Views:** v_open_incidents, v_pending_tasks, v_undelivered_notifications, v_latest_health
 
-> **Note:** sqlite3 is a runtime install — vanishes on container rebuild. Flag for Dockerfile if it disappears.
+> **Note:** sqlite3 is installed in the Dockerfile (persists across rebuilds).
 
 ---
 
