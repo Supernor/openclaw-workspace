@@ -81,6 +81,8 @@ This saves tokens and prevents inconsistency.
 | `context-snapshot.sh` | Generate pre-flight context snapshot for Claude Code handoff | JSON: full system state |
 | `ops-db.sh <cmd> [args]` | Query/mutate the ops SQLite database | JSON: query results |
 | `bridge.sh <cmd> [args]` | Manage bridge task flow (send/check/pickup/complete) | JSON: task lifecycle |
+| `upstream-check.sh` | Check upstream PR/discussion for new activity | JSON: comments, reviews, state |
+| `skill-audit.sh [--verbose]` | Audit skills for broken dependencies | JSON: issues, orphans |
 
 ---
 
@@ -155,6 +157,8 @@ SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Cod
 | `github-feed` | internal | nightly | LLM → #ops-github |
 | `nightly-report` | internal | nightly | LLM → #ops-nightly |
 | `ops-digest` | `/ops-digest` | user + nightly | LLM (reads ops-db, model-health, cron) |
+| `upstream-check` | `/upstream-check` | user | script |
+| `skill-audit` | `/skill-audit` | user | script |
 
 **Script-backed skills:** run the script, report the JSON result. No re-implementation.
 **LLM skills:** require judgment — use the LLM but keep responses concise.
