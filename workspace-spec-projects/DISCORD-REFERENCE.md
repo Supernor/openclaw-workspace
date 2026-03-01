@@ -12,7 +12,7 @@
 
 **Category:** `🔧 OPERATIONS` (`1477754392584126675`)
 **Guild:** `1477115265300037703`
-**Dashboard pinned message:** `1477754773951352903`
+**Dashboard pinned message:** `1477772410995343462`
 
 ## Polls for Decisions
 

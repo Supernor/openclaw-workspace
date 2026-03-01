@@ -21,7 +21,7 @@ All operational output goes to the `🔧 OPERATIONS` category. **Always use chan
 | #ops-changelog | `1477754637527290030` | Infrastructure changes | Nightly cron (changelog-post) |
 | #ops-github | `1477754638290649209` | GitHub activity feed | Nightly cron (github-feed) |
 
-**Pinned message in #ops-dashboard:** `1477754773951352903` — edit this message, never delete/recreate.
+**Pinned message in #ops-dashboard:** `1477772410995343462` — edit this message, never delete/recreate.
 **Category ID:** `1477754392584126675`
 **Guild ID:** `1477115265300037703`
 
