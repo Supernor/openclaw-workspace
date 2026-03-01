@@ -22,16 +22,16 @@ Primary tooling. All output structured JSON. Zero LLM tokens for execution.
 |-------|-------|
 | Binary | `/usr/local/bin/gh` |
 | Auth | `GH_TOKEN` env var |
-| Account | NowThatJustMakesSense |
+| Account | Supernor |
 
 **Common:**
 ```bash
 gh auth status
-gh secret list --repo NowThatJustMakesSense/<repo>
-gh secret set <KEY> --body "<value>" --repo NowThatJustMakesSense/<repo>
-gh api repos/NowThatJustMakesSense/<repo>
-gh issue list --repo NowThatJustMakesSense/openclaw-config --label incident --state open
-gh issue create --repo NowThatJustMakesSense/openclaw-config --title "..." --body "..." --label "incident,provider:X"
+gh secret list --repo Supernor/<repo>
+gh secret set <KEY> --body "<value>" --repo Supernor/<repo>
+gh api repos/Supernor/<repo>
+gh issue list --repo Supernor/openclaw-config --label incident --state open
+gh issue create --repo Supernor/openclaw-config --title "..." --body "..." --label "incident,provider:X"
 ```
 
 ## jq
@@ -46,9 +46,9 @@ jq '.usageStats | with_entries(select(.key | startswith("anthropic")))' auth-pro
 
 | Repo | Local path | Remote |
 |------|-----------|--------|
-| openclaw-config | `workspace-spec-github/openclaw-config/` | NowThatJustMakesSense/openclaw-config |
-| openclaw-workspace | `workspace-spec-github/openclaw-workspace/` | NowThatJustMakesSense/openclaw-workspace |
-| openclaw-skills | `workspace-spec-github/openclaw-skills/` | NowThatJustMakesSense/openclaw-skills |
+| openclaw-config | `workspace-spec-github/openclaw-config/` | Supernor/openclaw-config |
+| openclaw-workspace | `workspace-spec-github/openclaw-workspace/` | Supernor/openclaw-workspace |
+| openclaw-skills | `workspace-spec-github/openclaw-skills/` | Supernor/openclaw-skills |
 
 Auth via `gh auth setup-git` credential helper.
 

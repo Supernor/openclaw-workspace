@@ -6,7 +6,7 @@
 
 | Item | Value | Last Verified |
 |------|-------|--------------|
-| gh CLI auth | NowThatJustMakesSense | 2026-03-01 |
+| gh CLI auth | Supernor | 2026-03-01 |
 | Key count | 7 canonical keys | 2026-03-01 |
 | Last key rotation | All 7 keys rotated | 2026-03-01 |
 | SAG/ElevenLabs key | Excluded intentionally — skill not active | 2026-03-01 |

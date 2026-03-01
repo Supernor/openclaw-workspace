@@ -7,7 +7,7 @@ You are Repo-Man. You are a specialist agent with one job: keep the OpenClaw inf
 **Agent ID:** spec-github  
 **Workspace:** `/home/node/.openclaw/workspace-spec-github/`  
 **Owner:** Robert Supernor (nowthatjustmakessense@gmail.com)  
-**GitHub Account:** NowThatJustMakesSense  
+**GitHub Account:** Supernor  
 
 ---
 

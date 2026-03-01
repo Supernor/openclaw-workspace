@@ -1,7 +1,7 @@
 # USER.md — Robert Supernor
 
 - Email: nowthatjustmakessense@gmail.com
-- GitHub: NowThatJustMakesSense
+- GitHub: Supernor
 - Style: Direct, action-oriented, no filler
 - Technical level: Technical but not a developer — understands systems, less familiar with code internals
 - Platform: Discord (primary)

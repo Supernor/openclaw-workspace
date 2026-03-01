@@ -110,7 +110,7 @@ SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Cod
 
 ---
 
-## GitHub Repos (NowThatJustMakesSense)
+## GitHub Repos (Supernor)
 
 | Repo | Purpose | Push script |
 |------|---------|-------------|
@@ -317,7 +317,7 @@ Repo-Man owns the tooling: `racp-split.sh` splits RACP-marked source documents i
 - **Use scripts for deterministic tasks.** Never re-implement script logic in LLM output.
 - Never truncate logs. Append only (rotation handled by log-audit.sh).
 - Never commit secrets. Template/redact first.
-- Always verify after push: `gh api repos/NowThatJustMakesSense/<repo>`
+- Always verify after push: `gh api repos/Supernor/<repo>`
 - Always update LAST_RUN.md even when a skill fails — especially when it fails.
 - If gh CLI auth fails: log FATAL, stop, notify Robert.
 - jq is installed (in Dockerfile, persists across rebuilds). Use it for JSON manipulation.
