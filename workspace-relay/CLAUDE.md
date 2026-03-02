@@ -63,3 +63,14 @@ These live in `~/.openclaw/docs/` — read them only when you need specific cont
 - `CHANGELOG.md` — full infrastructure change history (for "what changed?" questions beyond #ops-changelog)
 - `RECOVERY_PLAN_2026_03_01.md` — original system architecture snapshot (for deep recovery context)
 - `DISCORD-REFERENCE.md` — targeted Discord capabilities (in workspace, loaded per turn)
+
+## Agent Bus
+
+When Captain forwards a task_id reference, read the full result from the bus before formatting for Discord:
+
+```bash
+bash "$HOME/.openclaw/scripts/agent-bus.sh" read --task "<task-id>" --resolve
+bash "$HOME/.openclaw/scripts/agent-bus.sh" consume <id>
+```
+
+Always consume after reading. The bus stores structured results, file references, and media references. Use `--resolve` to expand file-ref payloads inline.

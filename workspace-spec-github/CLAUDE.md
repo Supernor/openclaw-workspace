@@ -81,6 +81,7 @@ This saves tokens and prevents inconsistency.
 | `context-snapshot.sh` | Generate pre-flight context snapshot for Claude Code handoff | JSON: full system state |
 | `ops-db.sh <cmd> [args]` | Query/mutate the ops SQLite database | JSON: query results |
 | `bridge.sh <cmd> [args]` | Manage bridge task flow (send/check/pickup/complete) | JSON: task lifecycle |
+| `agent-bus.sh <cmd> [args]` | Inter-agent communication bus (post/read/consume/pending/cleanup) | JSON: message lifecycle |
 | `upstream-check.sh` | Check upstream PR/discussion for new activity | JSON: comments, reviews, state |
 | `skill-audit.sh [--verbose]` | Audit skills for broken dependencies | JSON: issues, orphans |
 
@@ -105,6 +106,7 @@ SQLite database at `~/.openclaw/ops.db` — shared between agents and Claude Cod
 | `notify deliver` | `ops-db.sh notify deliver 1` | Mark notification as sent |
 | `config recent` | `ops-db.sh config recent --limit 5` | Recent config changes |
 | `kv get/set` | `ops-db.sh kv set last_backup "2026-03-01T21:00:00Z"` | Key-value store |
+| `agent_results` | `agent-bus.sh post/read/consume/pending/cleanup` | Inter-agent message bus |
 | `stats` | `ops-db.sh stats` | Table row counts + DB size |
 
 **Tables:** health_snapshots, config_changes, incidents, tasks, notifications, kv
@@ -176,6 +178,8 @@ On heartbeat, follow HEARTBEAT.md exactly:
 6. Run `context-snapshot.sh` — keep bridge snapshot fresh for Claude Code sessions
 7. Run `ops-db.sh health snapshot` — record provider health to ops-db for trend analytics
 8. Run `bridge.sh check spec-github` — check for pending tasks from Claude Code
+9. Run `agent-bus.sh cleanup` — purge expired and consumed bus messages
+10. Run `skill-router.sh build` — rebuild skill routing index
 
 ---
 
@@ -337,6 +341,14 @@ When Claude Code updates a value (e.g., new pinned message ID), it updates the r
 
 Repo-Man owns the tooling: `racp-split.sh` splits RACP-marked source documents into per-agent versions. When creating shared content, write the source in `~/.openclaw/docs/` with RACP markers, run the split, deploy targeted outputs to workspaces.
 
+## Decision Authority
+
+| Tier | Actions |
+|------|---------|
+| **Act** | Run health checks, query logs, read ops.db, post to bus, run read-only scripts |
+| **Act + Notify** | Run nightly cron, execute backups, trigger model failover, rotate logs, cleanup bus |
+| **Ask First** | Modify openclaw.json, change auth profiles, create GitHub issues, push config changes, install packages |
+
 ## Rules
 
 - **Use scripts for deterministic tasks.** Never re-implement script logic in LLM output.
@@ -346,3 +358,54 @@ Repo-Man owns the tooling: `racp-split.sh` splits RACP-marked source documents i
 - Always update LAST_RUN.md even when a skill fails — especially when it fails.
 - If gh CLI auth fails: log FATAL, stop, notify Robert.
 - jq is installed (in Dockerfile, persists across rebuilds). Use it for JSON manipulation.
+
+## Agent Bus
+
+Inter-agent communication via `agent-bus.sh`. Use for passing structured results, context, and media between agents without burning Captain's context window.
+
+### Commands
+```bash
+S="$HOME/.openclaw/scripts/agent-bus.sh"
+
+# Post a result for another agent
+bash "$S" post --from spec-github --for relay --type result --task "health-42" --payload '{"status":"PASS"}'
+
+# Post a large file (auto-promoted if >4KB inline)
+bash "$S" post --from spec-github --for main --type context --task "ctx-1" --file /path/to/report.json
+
+# Post media with transcript
+bash "$S" post --from relay --for main --type media-ref --media /path/to/voice.ogg --transcript "Check server status"
+
+# Read pending messages for you
+bash "$S" pending --for spec-github
+
+# Read with file content resolved inline
+bash "$S" read --task "ctx-1" --resolve
+
+# Mark consumed after processing
+bash "$S" consume <id>
+
+# Cleanup expired (run in nightly cron)
+bash "$S" cleanup
+
+# Stats
+bash "$S" stats
+```
+
+### Types
+| Type | Use |
+|------|-----|
+| `result` | Task output — structured JSON |
+| `context` | Background info for the next agent |
+| `alert` | Urgent notification (default TTL 6h) |
+| `handoff` | Passing work to another agent |
+| `file-ref` | Auto-created when payload > 4KB |
+| `media-ref` | Audio, video, images with transcript |
+
+### Rules
+- **Post results to the bus** instead of including full output in task responses to Captain
+- Captain routes with task_id reference; consuming agent reads from bus
+- Always `consume` after reading — unconsumed messages persist
+- Set `--ttl` for ephemeral data (alerts: 6h, context: 24h, results: 24h default)
+- Nightly cron runs `agent-bus.sh cleanup` to purge expired + consumed rows
+- Files stored in `~/.openclaw/bus/results/` and `~/.openclaw/bus/media/`
