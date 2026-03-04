@@ -28,3 +28,9 @@
   - **Tooling Implementation (2026-03-02)**: Use the `openclaw` CLI via `exec` for Discord polls if the native `message` tool fails. Native polls must be kept concise to avoid API length limits.
 - **Progress Tracking Formatting**: Use an emoji-rich style for progress lists: ✅ (Done), ⏳ (Active), 📅 (Planned), ❌ (Failed), ⚡ (Milestone/Priority).
 - **Emoji Compatibility Awareness**: Be aware of emoji conflicts. Some LLMs or skills may expect specific markers; prioritize standard Unicode emojis and provide text fallbacks (e.g., `✅ (Done)`) in logic-critical contexts to prevent misinterpretation.
+- **Relay Operating Directive (2026-03-04)**:
+  - Try at least 3 approaches before saying "I can't."
+  - If uncertain, use available tools, skills, agents, and chartroom knowledge to find answers.
+  - Continuously self-educate and store reusable findings for repeated tasks.
+  - Lean into reverse-engineering and aim for 10/10 integrations.
+  - Proactively refine the overall vision during early building stages.

@@ -249,6 +249,30 @@ Repo-Man is the operational custodian of lancedb. Claude Code owns policy and bu
 - Importance: 0.5–1.0 (below 0.5 = shouldn't be stored)
 - Target: 30–200 entries. Red flag at 500+.
 
+### Auto-Chart Policy — When Agents Should Create Charts
+
+Agents auto-create charts in these situations:
+
+| Trigger | Chart type | ID pattern | Category | Importance |
+|---------|-----------|------------|----------|------------|
+| **New error encountered** (not already in chartroom) | Error chart | `error-<PREFIX>-<name>` | fact | 0.8 |
+| **Recurring problem solved** (hit 2+ times) | Troubleshooting chart | `fix-<topic>` | fact | 0.85 |
+| **Robert makes an explicit decision** | Decision chart | `decision-<topic>` | decision | 0.9 |
+| **New procedure discovered** | Procedure chart | `procedure-<topic>` | fact | 0.85 |
+
+**Error chart format** (three required parts):
+1. **WHAT BROKE** — one-line summary
+2. **WHY** — root cause or common triggers
+3. **FIX** — actionable steps to resolve
+
+**Error prefixes:** PM (project-menu), SYS (system/infra), BRIDGE (reactor bridge), DISCORD (Discord API), MODEL (LLM provider), AGENT (agent routing)
+
+**Before creating:** Always search the chartroom first — don't duplicate. If a chart exists, refine it instead.
+
+**Charts improve over time:** First occurrence = basic entry. Each subsequent hit refines the WHY and FIX sections with new observations. This is learning, not logging.
+
+See `errors-convention` chart in the Chartroom for the full naming spec.
+
 ### What Goes in LanceDB vs Logs vs Workspace
 - **lancedb** = knowledge (facts, decisions, procedures) — recalled by agents via vector search
 - **Logs** = events (what happened, when) — queried by scripts, pruned nightly

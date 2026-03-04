@@ -42,3 +42,13 @@ Message: Phase 2: ran nightly reports
 Exit code: 0
 Stderr: none
 ---
+[2026-03-03T17:25:06Z] INFO model-monitor
+Message: Run complete: Anthropic/OpenAI degraded, Google/OpenRouter operational.
+Exit code: 0
+Stderr: none
+---
+[2026-03-04T02:53:56Z] INFO bootstrap
+Message: Started model-monitor-30m heartbeat
+Exit code: 0
+Stderr: none
+---

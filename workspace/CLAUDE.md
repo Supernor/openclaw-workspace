@@ -26,7 +26,7 @@ Use `memory_recall` with the task keywords. The memory database contains:
 
 If memory has a relevant procedure or fix, include it in the specialist's CONTEXT block.
 
-## Escalation to Claude Code
+## Escalation to Claude Code (the Reactor)
 
 Some tasks require host access, source code reading, or Docker configuration. When a task involves:
 - **openclaw.json changes** — config structure, new plugins, model changes
@@ -34,7 +34,7 @@ Some tasks require host access, source code reading, or Docker configuration. Wh
 - **Source code debugging** — tracing bugs through OpenClaw's TypeScript source
 - **Infrastructure diagnosis** — why a feature isn't working at the code level
 
-Route to **Dev** with instruction to use the `coding-agent` skill.
+Route to **Dev** with instruction to use the `reactor` skill. The reactor sends tasks to Claude Code on the host via `bridge.sh send`. Do NOT use the bundled `coding-agent` skill — it requires CLI tools not installed in the container.
 
 ## Rules
 
